@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
-import { Task } from '../../types';
+import { Task, ColumnId } from '../types';
 
-// Mock data - in a real app, this would be stored in a database
-let tasks: Task[] = [
+// Mock data for demonstration
+const initialTasks: Task[] = [
   {
     id: '1',
     content: '研究 OpenClaw 的股票分析功能',
@@ -10,27 +10,30 @@ let tasks: Task[] = [
   },
   {
     id: '2', 
-    content: '部署 Second Brain 仪表板到 Vercel',
+    content: '开发自动化任务系统',
     columnId: 'inprogress',
   },
   {
     id: '3',
-    content: '测试自主任务生成系统',
-    columnId: 'inprogress',
-  },
-  {
-    id: '4',
-    content: '完成 Kanban 看板的拖拽功能',
+    content: '修复 Kanban 板构建错误',
     columnId: 'done',
   },
 ];
 
 export async function GET() {
-  return Response.json({ tasks });
+  return Response.json({ tasks: initialTasks });
 }
 
 export async function POST(request: NextRequest) {
-  const { tasks: newTasks } = await request.json();
-  tasks = newTasks;
-  return Response.json({ success: true });
+  try {
+    const body = await request.json();
+    const { tasks } = body;
+    
+    // In a real app, you would save to a database here
+    // For now, we just return the tasks back
+    return Response.json({ success: true, tasks });
+  } catch (error) {
+    console.error('Error saving tasks:', error);
+    return Response.json({ success: false, error: 'Failed to save tasks' }, { status: 500 });
+  }
 }
